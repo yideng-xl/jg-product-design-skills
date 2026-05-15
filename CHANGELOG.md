@@ -4,6 +4,16 @@
 
 ---
 
+## [1.1.1] - 2026-05-15
+
+### 修复(plugin 格式合规)
+- `plugin.json` 移到 `.claude-plugin/` 目录下(此前在根目录导致 Cowork 上传时 "Plugin validation failed")
+- 精简 `plugin.json` 字段,只保留 Claude 官方 plugin manifest 标准字段:name / version / description / author / homepage / repository / license / keywords
+- 移除非标准的 `skills` / `displayName` / `bugs` / `changelog` 字段(skills 由 `skills/<name>/SKILL.md` 自动发现,无需在 manifest 里声明)
+- License 从 "Internal" 改为 "MIT"(plugin 是公开仓库,跟 GitHub 仓库 license 对齐)
+
+---
+
 ## [1.1.0] - 2026-05-15
 
 ### `requirements2prd` 新增章节

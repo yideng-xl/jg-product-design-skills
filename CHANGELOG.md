@@ -4,6 +4,19 @@
 
 ---
 
+## [1.1.2] - 2026-05-15
+
+### 新增
+- **`.claude-plugin/marketplace.json`** —— 让本仓库同时成为 Claude plugin marketplace
+- 现在团队成员可以通过 **Cowork → Plugins → Personal → + → Add marketplace** 直接填 git URL `https://github.com/yideng-xl/jg-product-design-skills` 安装,**无需手动下载 zip + 上传**
+- 仓库现在是"既是 marketplace 又是 plugin"的紧凑形态:marketplace.json 里 `source: "./"` 把当前仓库本身作为唯一的 plugin
+
+### 影响
+- 团队成员升级 plugin 不需要再下载 zip,直接在 Cowork 里 sync marketplace 即可拉到最新版
+- 维护者发布流程不变(改 → 升版本 → push git → 团队 sync)
+
+---
+
 ## [1.1.1] - 2026-05-15
 
 ### 修复(plugin 格式合规)

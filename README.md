@@ -12,6 +12,7 @@
 |---|---|---|---|
 | `requirements2prd` | 粗需求到PRD | 用户给一句话粗需求,需要做成可评审的 PRD | [skills/requirements2prd/SKILL.md](skills/requirements2prd/SKILL.md) |
 | `prd2prototype` | PRD到原型 | 有了 PRD,需要做 HTML 原型用于产品评审 | [skills/prd2prototype/SKILL.md](skills/prd2prototype/SKILL.md) |
+| `prd2zentao` | PRD到禅道需求 | PRD 定稿后,把第四章产品范围批量同步成禅道研发需求 | [skills/prd2zentao/SKILL.md](skills/prd2zentao/SKILL.md) |
 
 ## 工作流(完整闭环)
 
@@ -30,6 +31,12 @@ PRD 草稿 + 挂起话题 + 术语字典 + 数据模型 + 状态机
     │  · 第 8 步:回写 PRD + 锁定本轮迭代 + 拉通设计/技术/QA
     ↓
 HTML 原型 + PRD 终稿 + 本轮迭代范围 + 设计/技术/QA 确认
+    ↓ 触发 skill: prd2zentao
+    │  · 确认目标产品 productID / 模块 moduleID / 来源
+    │  · 按 PRD 第四章拆需求 → 字段映射 → API 批量 upsert
+    │  · 模块只到二级 / needNotReview / 验证落位
+    ↓
+禅道研发需求(开发可领、可估、可追踪)
     ↓ 开发
 代码实现
 ```
@@ -63,6 +70,7 @@ Claude 在看到用户消息里包含 `description` 关键词时,会自动加载
 
 - **`requirements2prd` 的关键词**:粗需求 / 做 PRD / 产品方案 / 新模块设计 / 需求拆解 / 产品需求文档 / requirements / PRD
 - **`prd2prototype` 的关键词**:做原型 / HTML 原型 / 高保真原型 / 产品评审 / 原型规范 / prototype / mockup
+- **`prd2zentao` 的关键词**:同步禅道 / 建禅道需求 / 把 PRD 提到禅道 / 批量提研发需求 / 需求落禅道 / zentao
 
 > 用户:"老板说要做一个 X 模块,你帮我做个 PRD"
 > Claude:[自动加载 skills/requirements2prd/SKILL.md,按七步法开始]
@@ -147,8 +155,11 @@ jg-product-design-skills/
 └── skills/
     ├── requirements2prd/
     │   └── SKILL.md         # 粗需求 → PRD 方法论
-    └── prd2prototype/
-        └── SKILL.md         # PRD → 原型 方法论
+    ├── prd2prototype/
+    │   └── SKILL.md         # PRD → 原型 方法论
+    └── prd2zentao/
+        ├── SKILL.md         # PRD → 禅道研发需求 方法论
+        └── 前期操作手册.md   # 装扩展/登录禅道/确认产品 等前置步骤
 ```
 
 ---

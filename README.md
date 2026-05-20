@@ -19,8 +19,9 @@
 ```
 粗需求(一句话)
     ↓ 触发 skill: requirements2prd
-    │  · 商业本质三问(降本/增效/合规)
-    │  · 五看三定
+    │  · 需求规模定级(大模块走完整流程 / 具体功能走轻量细化)
+    │  · 商业本质三问(降本/增效/合规) ← 仅大模块
+    │  · 五看三定 ← 仅大模块
     │  · 苏格拉底式引导讨论
     │  · 七步法(5W / 约束 / 数据模型 / 状态机 / 视图 / PDCA / 挂起话题)
     │  · 历史债务子框架(优化场景)
@@ -92,12 +93,14 @@ Claude 在看到用户消息里包含 `description` 关键词时,会自动加载
 # 1. 改 SKILL.md 内容(补踩坑案例 / 改检查清单等)
 vim skills/requirements2prd/SKILL.md
 
-# 2. 升 version 号(plugin.json + CHANGELOG.md 都要改)
+# 2. 升 version 号(四个文件都要改,一个不能落)
 #    PATCH 改文案/补案例 → 1.0.0 -> 1.0.1
 #    MINOR 加新检查清单条目 / 新章节 → 1.0.x -> 1.1.0
 #    MAJOR 七步法变结构 / 加新 skill / 删旧方法 → 1.x.x -> 2.0.0
-vim plugin.json    # 改 "version"
-vim CHANGELOG.md   # 加新版本条目
+vim .claude-plugin/plugin.json       # 改 "version"
+vim .claude-plugin/marketplace.json  # 改 metadata.version + plugins[0].version
+vim CHANGELOG.md                     # 加新版本条目
+vim README.md                        # 更新工作流描述(如有变化)
 
 # 3. 提交并打 tag
 git add .

@@ -4,6 +4,15 @@
 
 ---
 
+## [1.9.0] - 2026-05-25
+
+### 维护 / 基线对齐
+
+- 作为后续工作的干净起点版本,无新增功能内容(功能口径与 1.8.0 一致)。
+- 修复发布链路问题:此前 v1.7.0 / v1.8.0 的 tag 曾误指向旧 commit(1.6.1),且 `plugin.json` 版本号长期滞后于 `marketplace.json`。本版本起 `plugin.json` 与 `marketplace.json` 版本号严格保持一致,tag 与 main commit 内容对齐,避免 Cowork 拉到空壳 tag。
+
+---
+
 ## [1.8.0] - 2026-05-22
 
 ### 新增(prd2prototype · 又一批实战标准 + 回写 PRD 共性)

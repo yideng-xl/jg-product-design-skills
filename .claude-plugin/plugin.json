@@ -1,6 +1,6 @@
 {
   "name": "jg-product-design-skills",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "产品设计方法论:从粗需求到 PRD、到高保真原型、再到禅道研发需求的完整工作流。包含 requirements2prd(七步法+需求规模定级+商业本质三问+五看三定+苏格拉底引导+历史债务子框架)、prd2prototype(七步法+回写PRD+锁定迭代+拉通设计/技术/QA)、prd2zentao(锚定第四章拆需求+确认产品+模块只到二级+API批量upsert)三个 skill。",
   "author": {
     "name": "yideng",

@@ -87,63 +87,92 @@ Claude 在看到用户消息里包含 `description` 关键词时,会自动加载
 
 ## 维护者发布流程
 
-每次有新错例 / 新踩坑 / 新最佳实践要沉淀进 skill:
+> 推荐用一键脚本 `release.sh`。它会自动堵住三类历史坑:**版本号漂移**(plugin.json 与 marketplace.json 不一致)、**空壳 tag**(tag 指向旧 commit、内容是旧的)、**漏提交**(本地改了 skill 但忘了 commit,同事更新时拉不到)。
+
+### 一键发布(推荐)
+
+每次有新踩坑 / 新最佳实践要沉淀进 skill:
 
 ```bash
 # 1. 改 SKILL.md 内容(补踩坑案例 / 改检查清单等)
 vim skills/requirements2prd/SKILL.md
 
-# 2. 升 version 号(四个文件都要改,一个不能落)
-#    PATCH 改文案/补案例 → 1.0.0 -> 1.0.1
-#    MINOR 加新检查清单条目 / 新章节 → 1.0.x -> 1.1.0
-#    MAJOR 七步法变结构 / 加新 skill / 删旧方法 → 1.x.x -> 2.0.0
-vim .claude-plugin/plugin.json       # 改 "version"
-vim .claude-plugin/marketplace.json  # 改 metadata.version + plugins[0].version
-vim CHANGELOG.md                     # 加新版本条目
-vim README.md                        # 更新工作流描述(如有变化)
+# 2. 在 CHANGELOG.md 顶部写好本版本条目(脚本会强制检查,没写就拒绝发布)
+#    PATCH 改文案/补案例            → 1.9.0  -> 1.9.1
+#    MINOR 加检查清单条目 / 新章节    → 1.9.x  -> 1.10.0
+#    MAJOR 七步法变结构 / 加删 skill  → 1.x.x  -> 2.0.0
+vim CHANGELOG.md
 
-# 3. 提交并打 tag
-git add .
-git commit -m "1.0.1: 补充 XX 场景踩坑案例"
-git tag v1.0.1
-git push && git push --tags
+# 3. 一条命令发布(版本号同步 + 打 tag + 推送,一气呵成)
+./release.sh 1.10.0 "requirements2prd 补充 XX 场景踩坑"
 ```
+
+脚本依次执行:校验版本号格式 → 确认 tag 未被占用(本地 + 远端)→ 检查 CHANGELOG 已有该版本条目 → 把 `plugin.json` / `marketplace.json` 所有 version 字段同步成新版本 → `git add -A` 列出全部改动并让你按 `y` 确认 → commit → 在该 commit 上打 tag → push 当前分支 + tag。
+
+### 手动发布(脚本不可用时的兜底)
+
+```bash
+# 版本号四处必须一致,一个都不能落下
+vim .claude-plugin/plugin.json       # "version"
+vim .claude-plugin/marketplace.json  # metadata.version + plugins[0].version
+vim CHANGELOG.md                     # 加新版本条目
+git add -A
+git commit -m "1.10.0: 一句话说明"
+git tag -a v1.10.0 -m v1.10.0        # tag 必须打在含本次改动的 commit 上
+git push origin main
+git push origin v1.10.0
+```
+
+> ⚠️ 不要在 GitHub Releases 界面对着旧 commit 单独建 tag —— 那会产生"空壳 tag"(tag 名是新版本,内容却是旧的),Cowork 会拉到错内容。tag 一律由 `release.sh` 或上面的命令在真实 commit 上打。
 
 ### 提交规范
 
-提交消息格式:`<version>: <一句话说明>`
+提交消息格式:`<version>: <一句话说明>`,例如:
+- `1.9.1: 补充 X 项目的"状态机命名冲突"踩坑`
+- `1.10.0: prd2prototype 增加"无障碍 a11y 检查清单"`
 
-例如:
-- `1.0.1: 补充 X 项目的"状态机命名冲突"踩坑`
-- `1.1.0: prd2prototype 增加"无障碍 a11y 检查清单"`
+---
+
+## Cowork 如何判断"有更新"(机制,实测)
+
+**Cowork 追踪的是 git 提交(commit),不是版本号。** 这点搞清楚后,"时好时坏"就有解释了:
+
+- 插件菜单 `⋮` 里那行 `Synced commit: xxxxxxx`,就是它当前同步到的 commit。**只要追踪分支(main)出现新 commit,它就认为有更新——与版本号是多少无关。**
+- 界面显示的 `Version` 数字,读的是 `.claude-plugin/plugin.json` 的 `version` 字段(实测:曾出现 marketplace.json=1.6.0、plugin.json=1.5.0,界面显示 **1.5.0**)。所以版本号只是"给人看的标签",不参与更新判断。
+- 推论:**让 Cowork 检测到更新的唯一可靠动作 = 往 main 推一个新 commit**。`release.sh` 每次都产生新 commit 并 push,所以它不只是兜底——它直接产出了 Cowork 依赖的那个触发信号,同时把 plugin.json 版本号一起升,保证界面数字也跟着变。
+- **tag 不参与 Cowork 的分支同步**(tag 不会移动,而 Sync automatically 针对的是会前进的分支)。tag 仍保留,供 Claude Code 锁版本(`git checkout v1.x`)和人查阅。
+
+> 待确认:Cowork 究竟追踪 main 分支 HEAD 还是某个 release——从现象看是分支 HEAD,但无法从本地缓存 100% 证实。验证法:推一个新 commit 但**不打 tag**,看 `Check for updates` 是否仍能检测到;能,即为追踪分支 HEAD。
 
 ---
 
 ## 团队成员更新流程
 
-### 自动检测(Claude 提示)
+### Cowork mode(推荐)
 
-Claude 启动时会比对本地 plugin.json 的 version 和远程仓库的最新 release。**发现新版本会提示**:
+- **开启自动同步**:插件菜单 `⋮ → Sync automatically` 打开后,维护者往 main 推新 commit,几分钟内自动拉取,**无需删除重装**。
+- **手动检查**:`⋮ → Check for updates` 强制和远端比对并拉取。
+  > 详情页那个 `Update` 按钮若是灰的,是因为 Cowork 缓存的同步状态还没识别到新 commit;用 `⋮ → Check for updates` 才会真正去远端比对。
+- **刚 push 完没反应**:GitHub 内容接口有几分钟缓存,等 2–3 分钟再点一次 `Check for updates`。
+- **兜底(极少用)**:仍拉不到时 `⋮ → Remove` 卸载,再用 `+` 重新添加 git URL 强制全新 clone。正常流程不该走到这步。
 
-> "jg-product-design-skills 有新版本可用:1.0.0 → 1.0.1。是否查看变更日志并更新?"
-
-### 手动检测
+### Claude Code
 
 ```bash
 cd ~/.claude/plugins/jg-product-design-skills
 git fetch
 git log HEAD..origin/main --oneline    # 看有什么新提交
 cat CHANGELOG.md                        # 看变更说明
-git pull                                # 确认更新后拉取
+git pull                                # 确认后拉取
 ```
 
 ### 强制锁定某版本
 
-如果团队成员当前项目不想被新版本打扰:
+某项目不想被新版本打扰:
 
 ```bash
 cd ~/.claude/plugins/jg-product-design-skills
-git checkout v1.0.0    # 锁到指定 tag
+git checkout v1.9.0    # 锁到指定 tag
 ```
 
 ---
@@ -152,8 +181,11 @@ git checkout v1.0.0    # 锁到指定 tag
 
 ```
 jg-product-design-skills/
-├── plugin.json              # 元信息 + skills 索引
-├── CHANGELOG.md             # 变更日志(每次升版本必更)
+├── .claude-plugin/
+│   ├── plugin.json          # 插件元信息(version 等;界面 Version 读这里)
+│   └── marketplace.json     # marketplace 索引(metadata.version + plugins[].version)
+├── release.sh               # 一键发布脚本(版本号同步 + 打 tag + 推送)
+├── CHANGELOG.md             # 变更日志(每次升版本必更,release.sh 会强制检查)
 ├── README.md                # 本文件
 └── skills/
     ├── requirements2prd/

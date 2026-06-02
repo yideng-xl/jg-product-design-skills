@@ -105,19 +105,38 @@ description: 把 PRD 第四章「产品范围」按模块拆成禅道研发需�
 
 ### 第 5 步:用浏览器会话调 API 创建
 
-禅道没有独立 API token 方案,但创建走的是传统 PHP 路由,认证靠**浏览器里已登录的会话 cookie**。所以做法是:在已登录禅道的标签页里,用 JS 执行 `fetch(..., {credentials:'include'})`。
+禅道没有独立 API token 方案,但创建走的是传统 PHP 路由,认证靠**浏览器里已登录的会话 cookie**。做法是在已登录禅道的标签页里,用 JS 执行 `fetch(..., {credentials:'include'})`。具体怎么"在标签页里跑",有两种执行模式,按环境选:
 
-端点与固定参数见下方「API 速查」。完整防御逻辑参考仓库里的现成实现:`0-方法论/禅道Axure同步插件/extension/src/zentao-client.js`(同一套客户端,本 skill 直接复用其 createStory/upsert 逻辑)。
+**模式 A — Claude 直接用浏览器工具跑(公网 / 策略放行的禅道)**
+Claude in Chrome 新建标签、navigate 到目标产品列表页,再用 `javascript_tool` 执行 fetch。链路全自动,Claude 自己拿结果、自己核对。
+
+**模式 B — 控制台粘贴脚本由用户手动跑(内网禅道,实战常用)**
+内网 http 禅道(如 `dev.jugeng.com`)上,Claude in Chrome 的 navigate 往往被**组织策略拦截**,报 `This site is blocked by your organization's policy`。这是真实的访问策略,**绝不绕过**(不用 curl/wget/bash/Python 等任何替代手段去碰它)。此时退化为:
+
+1. Claude 生成一份**自包含的批量 upsert 控制台脚本**(模板见下方「API 速查 · 批量脚本模板」),写到 PRD 同目录,文件名带 `-控制台粘贴` 后缀。
+2. 用户在自己**已登录禅道的标签页**里 `F12 → Console`,整段粘贴执行。
+3. 用户把 `console.table` 结果(标题 / 动作 / 结果 / 信息四列)截图或贴文字回传给 Claude。
+4. Claude 据此核对每条是否 `success`,失败项读「信息」列定位。
+
+> 经验:`dev.jugeng.com` 上模式 A 的 navigate 被策略挡死,模式 B 一次跑通 6/6。内网禅道默认走模式 B,别在被拦的 navigate 上反复试。
+
+端点与固定参数见下方「API 速查」。
 
 ### 第 6 步:upsert 防重复
 
-按 title 先查后建:同名已存在则走 `m=story&f=edit` 更新,否则 `m=story&f=create` 新建。批量串行执行,逐条记录成功/失败。这样 PRD 迭代后重跑不会产生重复需求。(查找逻辑见 zentao-client.js 的 `findStoryIdByTitle`)
+按 title 先查后建:同名已存在则走 `m=story&f=edit` 更新,否则 `m=story&f=create` 新建。批量串行执行,逐条记录成功/失败。这样 PRD 迭代后重跑不会产生重复需求。
+
+**title 比对前先归一化**(脚本里的 `norm()`):抹平全角/半角括号(`(` vs `(`)、空白差异再比。否则草稿里写 `通用横切能力(待办挂入+跨模块联动)`、禅道里存成半角括号,就会被判成两条、重跑建出重复。归一化只用于"找有没有同名",写进禅道的 title 仍用草稿原文。
 
 ### 第 7 步:验证落位
 
 建完后,导航到按模块筛选的列表页确认:
 `index.php?m=product&f=browse&productID=XX&browseType=byModule&param=<moduleID>`
-逐条核对:数量对不对、模块对不对、优先级对不对、评审人是否为空(needNotReview 生效)。截图给用户过一遍。
+逐条核对:数量对不对、模块对不对、优先级对不对。截图(模式 B 由用户截)过一遍。
+
+**两个验证捷径(少查一遍):**
+- **needNotReview 生效 = 创建成功本身就证明了**。若产品开了评审又没带评审人,创建会直接报 `fail`。所以只要那条 `result:success`,就说明评审人为空被接受了,不必再点进去看评审人字段。
+- **模块到二级、字段对不对**,随便点开一条需求详情页看「所属模块 = 一级/二级」「当前状态 = 激活·已计划」(不是"草稿/待评审")即可代表全批——批量同字段,抽一条即可。
 
 ---
 
@@ -191,7 +210,54 @@ URL 里那串 `branch=all&moduleID=0&story=0&...&storyType=story` 必须带全,�
 ```
 
 **更新(POST):** `index.php?m=story&f=edit&storyID=<SID>`,body 同上 + `comment=<变更说明>`。
-**查列表/按 title 找 id:** `index.php?m=product&f=browse&productID=<PID>&...&zin=1`,解析 zin 响应里的 stories(逻辑见 zentao-client.js)。
+**查列表/按 title 找 id:** `index.php?m=product&f=browse&productID=<PID>&branch=0&browseType=byModule&param=<MID>`,把返回 HTML 里每行的 `data-id` + 标题解析成 `标题→storyID` 映射。
+
+### API 速查 · 批量脚本模板(模式 B 用,自包含)
+
+把下面这段补好 `CONFIG` 和 `STORIES` 后,整段交用户粘进已登录禅道标签的 Console。它先拉目标模块现有需求建映射,再逐条 upsert(同名更新、否则新建),最后 `console.table` 汇总。**自包含,不依赖任何外部脚本文件。**
+
+```js
+(async () => {
+  const CONFIG = { productID:75, moduleID:1004, planID:138, source:'customer', category:'feature', pri:1 };
+  const P = (...lines) => lines.map(t => `<p>${t}</p>`).join('');     // spec/verify 支持 HTML
+  const STORIES = [
+    { title:'示例需求', spec:P('功能描述…'), verify:P('1. 验收点…') },
+    // …按 PRD 第四章逐块填
+  ];
+  const norm = s => (s||'').replace(/[（）]/g, m => m==='（'?'(':')').replace(/\s+/g,'').trim(); // 标题归一化,提高 upsert 命中
+  // 1) 现有需求 → 标题→id 映射
+  const listUrl = `${location.origin}/index.php?m=product&f=browse&productID=${CONFIG.productID}&branch=0&browseType=byModule&param=${CONFIG.moduleID}`;
+  const map = {};
+  try {
+    const lt = await (await fetch(listUrl,{credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest'}})).text();
+    new DOMParser().parseFromString(lt,'text/html').querySelectorAll('table tbody tr').forEach(tr => {
+      const id=(tr.getAttribute('data-id')||tr.querySelector('.c-id,td.c-id')?.textContent||'').replace(/\D/g,'');
+      const a=tr.querySelector('a[href*="story-view"],a[href*="m=story"],.c-title a,td.c-name a')||tr.querySelector('a');
+      const t=(a?.getAttribute('title')||a?.textContent||'').trim(); if(id&&t) map[norm(t)]=id;
+    });
+  } catch(e){ console.warn('读现有列表失败,全部走新建:',e); }
+  // 2) 逐条 upsert
+  const out=[];
+  for (const s of STORIES) {
+    const exist=map[norm(s.title)];
+    const qs=new URLSearchParams({m:'story',f:'create',productID:String(CONFIG.productID),branch:'all',moduleID:'0',story:'0',objectID:'0',bugID:'0',planID:'0',todoID:'0',storyType:'story'});
+    const url= exist ? `${location.origin}/index.php?m=story&f=edit&storyID=${exist}` : `${location.origin}/index.php?${qs}`;
+    const p={product:CONFIG.productID,branch:0,module:CONFIG.moduleID,plan:CONFIG.planID,title:s.title,pri:CONFIG.pri,estimate:0,category:CONFIG.category,source:CONFIG.source,needNotReview:1,keywords:'',spec:s.spec,verify:s.verify};
+    if(exist) p.comment='按 PRD 定稿同步';
+    const body=new URLSearchParams(); for(const[k,v]of Object.entries(p)) body.append(k,String(v));
+    try {
+      const r=await fetch(url,{method:'POST',credentials:'include',headers:{'X-Requested-With':'XMLHttpRequest','Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},body});
+      const tx=await r.text(); let d=null; try{d=JSON.parse(tx);}catch(e){}
+      out.push({标题:s.title,动作:exist?`更新#${exist}`:'新建',结果:d?(d.result||d.status||'?'):`HTTP${r.status}(非JSON,可能未登录)`,信息:d?(typeof d.message==='object'?JSON.stringify(d.message):(d.message||'')):''});
+    } catch(e){ out.push({标题:s.title,动作:exist?`更新#${exist}`:'新建',结果:'error',信息:String(e)}); }
+  }
+  console.table(out);
+  console.log(`完成: ${out.filter(r=>r.结果==='success').length}/${out.length} 条成功。`);
+  return out;
+})();
+```
+
+> 注意:`console.table` 只在用户自己的 Console 里看,Claude 拿不到——所以模式 B 一定要让用户**回传那张表**(截图或文字)。别只回传原始 HTML(见避坑 2)。
 
 ---
 
@@ -213,10 +279,12 @@ URL 里那串 `branch=all&moduleID=0&story=0&...&storyType=story` 必须带全,�
 - [ ] 需求都挂在正确的二级模块下
 
 ### D. 执行
-- [ ] 先建 1 条试点,验证落位 + 字段正确,再批量
+- [ ] 选好执行模式:公网/放行禅道走模式 A(Claude 直接跑);内网禅道(navigate 被策略拦)走模式 B(控制台粘贴脚本,用户跑)
+- [ ] 先建 1 条试点,验证落位 + 字段正确,再批量(或模式 B 一次性批量后整体核对)
 - [ ] needNotReview=1 已带(否则评审人必填报错)
+- [ ] title 比对走 norm() 归一化,避免全角/半角括号导致重复
 - [ ] 批量串行,逐条记录成功/失败
-- [ ] 建完按模块筛选列表,截图给用户核对
+- [ ] 模式 B:用户回传 console.table 结果;建完按模块筛选列表 / 抽一条详情截图核对
 
 ---
 
@@ -246,14 +314,21 @@ URL 里那串 `branch=all&moduleID=0&story=0&...&storyType=story` 必须带全,�
 ### 错 8:不做 upsert,迭代重跑产生重复
 PRD 会迭代,重跑同步如果只 create 不 upsert,会建出一堆同名需求。按 title 先查后建/改。
 
+### 错 9:内网禅道 navigate 被组织策略拦,还在自动导航上反复试
+内网 http 禅道(如 `dev.jugeng.com`)上,Claude in Chrome 的 navigate 会被 `blocked by your organization's policy` 挡住。这是真实访问策略,**不绕过**(不用 curl/bash/Python 等替代手段),也别反复重试导航。直接切模式 B:生成控制台粘贴脚本,交用户在自己已登录的标签里跑、回传结果(见第 5 步)。
+
+### 错 10:title 不归一化,全角/半角括号差异导致 upsert 漏判重复
+草稿里写全角括号 `(…)`、禅道里存半角 `(…)`,直接字符串比对会判成两条 → 重跑建重复。比对前用 `norm()` 抹平括号与空白(见第 6 步)。
+
 ---
 
 ## 输出物清单
 
 - 禅道里建好的研发需求(挂在确认过的产品 + 二级模块下)
-- 一份拆分清单(标题 / 模块 / 优先级 / 来源),建前给用户确认、建后核对
-- 批量执行结果(逐条成功/失败 + 失败原因)
-- 建后的模块筛选列表截图(验证落位)
+- **一份拆分草稿 `.md`**(同步字段表 + 每条需求的 spec/verify),建前给用户确认粒度、建后核对,也作为下次迭代重跑的来源
+- **模式 B 的控制台粘贴脚本 `.js`**(文件名带 `-控制台粘贴`,自包含,放 PRD 同目录)
+- 批量执行结果(`console.table` 逐条成功/失败 + 失败原因)
+- 建后的模块筛选列表 / 抽一条详情页截图(验证落位)
 
 ---
 

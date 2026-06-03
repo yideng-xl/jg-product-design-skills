@@ -146,4 +146,12 @@
       b.textContent = document.body.classList.contains("theme-dark") ? "切换浅色" : "切换深色";
     });
   });
+/* ---------- 侧滑面板 Drawer:右侧抽屉,开/关/遮罩关闭 ---------- */
+  window.openDrawer = function (id) { var d = document.getElementById(id); if (d) d.classList.add("open"); };
+  window.closeDrawer = function (id) { var d = document.getElementById(id); if (d) d.classList.remove("open"); };
+  $("[data-drawer-open]").forEach(function (b) { b.addEventListener("click", function () { window.openDrawer(b.getAttribute("data-drawer-open")); }); });
+  $(".drawer-mask").forEach(function (mask) {
+    mask.addEventListener("click", function (e) { if (e.target === mask) mask.classList.remove("open"); });
+    $("[data-drawer-close]", mask).forEach(function (b) { b.addEventListener("click", function () { mask.classList.remove("open"); }); });
+  });
 })();

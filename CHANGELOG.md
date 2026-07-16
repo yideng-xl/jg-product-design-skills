@@ -23,8 +23,8 @@
 
 ### 文档 / 分发(原型编辑器)
 
-- 原型编辑器打包成 `原型编辑器工具.zip`(含 `原型编辑器.app` / `.vbs` / `.command` + 使用说明.txt),**作为 GitHub Release 附件**分发——二进制不进 git 仓库(`dist/` 已 gitignore),也不随插件 auto-update。
-- GitHub Pages(`docs/index.html`,「使用说明」站点)新增「⑦ 下载原型编辑器」一节:下载按钮指向 `releases/latest/download/原型编辑器工具.zip`,别人只记 Pages 一个页;含三步用法 + 只读/可编辑边界。README 同步加下载入口。
+- 原型编辑器打包成 `prototype-editor.zip`(含 `原型编辑器.app` / `.vbs` / `.command` + 使用说明.txt),**作为 GitHub Release 附件**分发——二进制不进 git 仓库(`dist/` 已 gitignore),也不随插件 auto-update。
+- GitHub Pages(`docs/index.html`,「使用说明」站点)新增「⑦ 下载原型编辑器」一节:下载按钮指向 `releases/latest/download/prototype-editor.zip`,别人只记 Pages 一个页;含三步用法 + 只读/可编辑边界。README 同步加下载入口。
 
 ## [1.16.0] - 2026-06-16
 

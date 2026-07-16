@@ -4,6 +4,28 @@
 
 ---
 
+## [1.17.0] - 2026-07-14
+
+### 新增(prd2prototype · 原型本地可编辑覆盖层)
+
+- 需求便签(`.proto-tip` 弹层文字)、原型说明可在**本地页面上直接改**,不用回去抠 HTML;改动落一份**覆盖层文件** `data/annotations.js`,发布到 GitLab 后只读、无任何编辑入口。
+  - **判据只认主机名**:`localhost`/`127.0.0.1` → 可编辑(经「原型编辑器」打开);**`file://` 直接双击 = 纯看只读**(和原来一样是静态 HTML,不出编辑入口);内网域名(评审访问)→ 发布只读。不引入手动开关常量。编辑只在主动用编辑器跑到 localhost 时才开,顺带去掉了"导出替换"整套。
+  - **跨平台原型编辑器(独立工具,壳=控制页)**:新增 `assets/serve.js`(零依赖 Node 服务:控制页 + `POST /pick` 原生选文件夹 + `/proto/*` 服务所选原型 + `/proto/save-annotations` 写盘 + `/ping`/`/bye` 心跳)、`assets/launcher.js`(固定端口探测 + 起服务开默认浏览器)、`assets/panel.html`(控制页/壳:操作说明 + 选原型 + 使用说明 + 停止)、双击入口 `原型编辑器.app`(Mac,不弹终端)/ `原型编辑器.vbs`(Win,不弹黑窗)+ `.command`/`.cmd` 兜底。**双击 → 控制页选原型 → 网页上改 → 关页面(心跳自动停服务)**,不碰命令行、不弹黑窗,不懂技术的产品同事也能用;Mac/Windows 都支持。**固定端口 47821**(可收藏,已在跑则直接开控制页,不重复启动)。控制页与编辑条都有「使用说明」链接到插件 GitHub Pages。原型本身不放服务文件。
+  - **长文本样式加固**:需求便签弹层定宽换行、编辑态整条占块弹层落下方、可编辑区 `word-break`,文字变多不撑破布局。
+  - **覆盖层与生成层分家(防覆盖)**:HTML 是生成层(Claude 可反复重写),`annotations.js` 是覆盖层(产品所有,Claude 永不覆写),渲染时按 `data-anno-id` 覆盖回来。只要 ID 稳定,重画原型手改就不丢。
+  - **结构约定**:文本载体带 `data-anno-id="页面前缀.类型-序号"`(显式手写、只增不改不复用,不自动编号);富文本块加 `data-anno-rich`;可整条增删的标签用 `data-anno-item` + `data-anno-container`(落 additions / removed)。编辑态左上角以 `#id` 显示编号,发布态隐藏。
+  - **能力内建在 `assets/common.js`**:覆盖渲染 + 编辑态开关 + `contenteditable` + 增删 + 导出 `annotations.js`(含本地草稿 localStorage 防丢);样式在 `assets/skill-extras.css`(全 scope 在 `body.edit-mode`)。`annotations.js` 用 `.js` 挂 `window.__ANNO__`(躲 file:// 的 CORS),引用须在 `common.js` 之前。
+- SKILL.md 第 6 步末补「本地可编辑覆盖层」一节:数据模型、结构约定、编辑-导出-替换-commit 流程、三条铁律。
+
+### 修复(prd2prototype · 需求便签开合逻辑内建 + 可复制)
+
+- 需求便签(`.proto-tip`)的点击开合逻辑**正式内建到 `assets/common.js`**(此前 SKILL 声称在 common.js 但实际没有,各页内联)。行为:点徽标开合、**点弹层内部不关闭、点外部才关**——修掉"想选中复制需求文字、鼠标一点弹层就消失"的坑。原型页不用再写内联开合脚本。
+
+### 文档 / 分发(原型编辑器)
+
+- 原型编辑器打包成 `原型编辑器工具.zip`(含 `原型编辑器.app` / `.vbs` / `.command` + 使用说明.txt),**作为 GitHub Release 附件**分发——二进制不进 git 仓库(`dist/` 已 gitignore),也不随插件 auto-update。
+- GitHub Pages(`docs/index.html`,「使用说明」站点)新增「⑦ 下载原型编辑器」一节:下载按钮指向 `releases/latest/download/原型编辑器工具.zip`,别人只记 Pages 一个页;含三步用法 + 只读/可编辑边界。README 同步加下载入口。
+
 ## [1.16.0] - 2026-06-16
 
 ### 新增(proto-check · 产品设计自查表补「原型规范类」)

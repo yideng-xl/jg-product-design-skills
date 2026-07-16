@@ -88,6 +88,11 @@
   .gb .good b{color:#5a9216;} .gb .bad b{color:#c0341d;}
   hr.s{border:none;border-top:1px solid var(--line);margin:36px 0;}
   .foot{color:var(--muted);font-size:12.5px;margin-top:40px;}
+  .dlwrap{background:linear-gradient(180deg,#f2f8f8,#fff);border:1px solid #cfe6e5;border-radius:10px;padding:20px 22px;margin:16px 0;}
+  .dlbtn{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#fff;font-weight:600;font-size:15px;padding:12px 22px;border-radius:8px;text-decoration:none;}
+  .dlbtn:hover{background:#198A88;}
+  .dlmeta{font-size:12.5px;color:var(--muted);margin-top:10px;}
+  .steps3{margin:14px 0 0;padding-left:20px;} .steps3 li{margin:4px 0;}
   @media(max-width:820px){ nav.side{display:none;} main{padding:24px 18px 80px;} .recipe .grid{grid-template-columns:1fr;} .recipe .col+.col{border-left:none;border-top:1px solid var(--line);} .gb{grid-template-columns:1fr;} }
 </style>
 </head>
@@ -103,6 +108,8 @@
     <a href="#version">④ 每个版本号什么意思</a>
     <a href="#record">⑤ 让它记一条版本变更</a>
     <a href="#summary">⑥ 变更摘要怎么写</a>
+    <div class="grp">自己动手改</div>
+    <a href="#editor">⑦ 下载「原型编辑器」</a>
     <div class="grp">参考</div>
     <a href="#templates">话术模板速查</a>
     <div class="grp">后续补充</div>
@@ -252,6 +259,22 @@
         </div>
       </div>
       <div class="keypt">一句自检:<b>"这件事能用一句业务话讲清吗?"</b> 能 → 一条摘要;不能 → 拆 2-3 条,但每条都是业务句子。</div>
+    </section>
+
+    <!-- 7 -->
+    <section id="editor">
+      <h2>⑦ 想自己在网页上改这些标注 / 说明?下载「原型编辑器」</h2>
+      <p class="intro">前面讲的是<b>让 Claude 替你标</b>。原型出来后,如果你(或不懂技术的同事)想<b>自己直接改需求标签的文字、原型说明</b>——不用回来找 Claude、不用碰代码——用这个小工具:在网页上点开需求便签就能改,改完自动写回原型。</p>
+      <div class="dlwrap">
+        <a class="dlbtn" href="https://github.com/yideng-xl/jg-product-design-skills/releases/latest/download/原型编辑器工具.zip">⬇ 下载原型编辑器(Mac / Windows)</a>
+        <div class="dlmeta">解压后:Mac 双击 <code>原型编辑器.app</code>,Windows 双击 <code>原型编辑器.vbs</code>。前提是电脑装了 <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js</a>(一次性安装)。</div>
+      </div>
+      <ol class="steps3">
+        <li>双击打开后,浏览器弹出<b>控制页</b>,点「选择原型文件夹」,选中要改的原型目录。</li>
+        <li>新标签进入原型,打开右下角「<b>编辑态</b>」,直接在页面上点开需求便签、改文字(原型说明同理)。</li>
+        <li>改完<b>关掉那个标签</b>即可——改动已自动写回该原型的 <code>data/annotations.js</code>;控制页还留着,可接着选下一个(最近 5 个有历史,可删)。</li>
+      </ol>
+      <div class="keypt"><b>只有你用编辑器打开(本地 localhost)才可改。</b>发布到内网给评审看、或别人直接双击 HTML,都是<b>只读</b>、看不到编辑入口——不担心改动被别人误碰。</div>
     </section>
 
     <hr class="s">

@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "产品设计方法论 marketplace。包含从粗需求到 PRD、到高保真原型、再到禅道研发需求的完整 Claude plugin。",
-    "version": "1.16.0"
+    "version": "1.17.0"
   },
   "plugins": [
     {
       "name": "jg-product-design-skills",
       "source": "./",
       "description": "产品设计方法论:从粗需求到 PRD、到高保真原型、再到禅道研发需求的完整工作流。包含 requirements2prd(七步法+需求规模定级+商业本质三问+五看三定+苏格拉底引导+历史债务子框架)、prd2prototype(七步法+回写PRD+锁定迭代+拉通设计/技术/QA)、prd2zentao(锚定第四章拆需求+确认产品+模块只到二级+API批量upsert)、proto-check(原型自查:产品设计自查表67条+七大易用原则量化标准75条,输出双自查报告+可直接粘贴的整改要求)四个 skill。",
-      "version": "1.16.0",
+      "version": "1.17.0",
       "homepage": "https://github.com/yideng-xl/jg-product-design-skills",
       "license": "MIT",
       "keywords": ["product-design", "prd", "prototype", "zentao", "methodology", "skill"]

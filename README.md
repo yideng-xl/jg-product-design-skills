@@ -15,6 +15,16 @@
 | `prd2zentao` | PRD到禅道需求 | PRD 定稿后,把第四章产品范围批量同步成禅道研发需求 | [skills/prd2zentao/SKILL.md](skills/prd2zentao/SKILL.md) |
 | `proto-check` | 原型自查 | 原型产出后、评审前,按自查表+UI规范逐条自查,出报告和整改要求 | [skills/proto-check/SKILL.md](skills/proto-check/SKILL.md) |
 
+## 原型编辑器(下载 · 产品自己改需求标签)
+
+`prd2prototype` 产出的原型里,**需求便签 / 原型说明可以由产品自己在网页上改**(不用改代码、不用找 Claude),改完自动写回原型。这个能力靠一个独立小工具「原型编辑器」——它**不随插件自动更新分发,而是下载使用**:
+
+- **下载**:[最新版原型编辑器工具.zip](https://github.com/yideng-xl/jg-product-design-skills/releases/latest/download/原型编辑器工具.zip)(GitHub Release 附件),或从[使用说明页](https://yideng-xl.github.io/jg-product-design-skills/#editor)点下载。
+- **用法**:解压后 Mac 双击 `原型编辑器.app` / Windows 双击 `原型编辑器.vbs`(需装 [Node.js](https://nodejs.org))→ 控制页选原型 → 开「编辑态」改字 → 关页面即停。
+- 只有本地用编辑器打开(localhost)才可编辑;发布到内网、或直接双击 HTML 都是**只读**,评审看不到编辑入口。
+
+---
+
 ## 工作流(完整闭环)
 
 ```

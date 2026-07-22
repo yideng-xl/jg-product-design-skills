@@ -4,6 +4,15 @@
 
 ---
 
+## [1.17.1] - 2026-07-22
+
+### 修复 / 打磨(prd2prototype 原型编辑器)
+
+- **仓库不再放 `.app`**:编辑器改为「源文件(`assets/editor/`)+ `pack.sh` 打包」,`.app` 只在下载的 `prototype-editor.zip` 里生成。修掉之前把 `.app` 放进 assets 导致磁盘上每个副本(插件缓存/克隆/解压/codex 版)都被 macOS Launchpad 索引、冒出一堆重复图标的问题。
+- **控制页加「最近打开 5 个原型」历史**(localStorage,最近在前,可点开、可删除),不落文件。
+- **每个原型自带 URL `/p/<base64路径>/`**(无全局状态),多个原型标签同时开互不串(各写各的 `data/annotations.js`);选原型改为**开新标签**、控制页保留可接着选。
+- 修掉选文件夹后 `forbidden`(osascript 路径尾斜杠未归一化);Release 附件用英文名 `prototype-editor.zip`(中文名被 GitHub 变成 default.zip);Pages / README 下载指向主仓库 Release。
+
 ## [1.17.0] - 2026-07-14
 
 ### 新增(prd2prototype · 原型本地可编辑覆盖层)

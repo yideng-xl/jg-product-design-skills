@@ -73,7 +73,7 @@ description: 把 PRD 的概念/数据模型/视图设计落成可评审的 HTML 
 | `assets/common.css` | **样式基线**:`:root` 全量设计 token(色彩 / 字体 / 间距 / 圆角 / 阴影,含深浅主题)+ 30+ 组件样式,状态走 CSS 伪类 |
 | `assets/common.js` | **交互层**:Select / TreeSelect / Tree / Modal / 标签页 / 分段 / 多选单选开关等"能点"的最小交互,按类名 + `data-*` 自动绑定 |
 | `assets/skill-extras.css` | **原型辅助层**(非 Figma):`.snippet` 配置片段、`.summary-card` KPI 卡、`.field-spec` 字段规格表、`.proto-note` 原型说明分隔、需求便签/原型说明**可编辑覆盖层**样式等本 skill 约定 |
-| `assets/原型编辑器.app`(**自包含单图标**,serve.js/launcher.js/panel.html 在 `Contents/Resources/` 内)+ `原型编辑器.vbs`(Win 入口)+ `原型编辑器.command`(Mac 兜底) | **原型编辑器**(跨平台,需装 Node):Mac 双击 App / Win 双击 `.vbs` → 浏览器开**控制页(壳)** `http://localhost:47821/`(操作说明 + 选原型 + 使用说明 + 停止)→ 选原型 → 页面上改需求便签/原型说明,自动写回该原型的 `data/annotations.js`。**关掉页面服务自动停**(心跳),固定端口可收藏。独立工具,放一处、选谁编谁,不拷进原型(见第 6 步) |
+| `assets/editor/`(编辑器**源文件** + `pack.sh` 打包脚本;仓库里**不放 `.app`**) | **原型编辑器**(跨平台,需装 Node):用户从 GitHub Release 下载 `prototype-editor.zip` 解压 → Mac 双击 `原型编辑器.app` / Win 双击 `原型编辑器.vbs` → 浏览器开**控制页(壳)** `http://localhost:47821/`(操作说明 + 选原型 + 最近 5 个 + 使用说明 + 停止)→ 选原型 → 页面上改需求便签/原型说明,自动写回该原型的 `data/annotations.js`。**关掉页面服务自动停**(心跳),固定端口可收藏。改了编辑器代码后跑 `bash assets/editor/pack.sh` 重新打包(见第 6 步) |
 | `assets/组件规格表.md` | 62 个组件集的变体维度 + 逐变体真实取色(查色用) |
 | `assets/组件样例.html` | 全组件演示页(对照样式 / 交互用) |
 
@@ -362,7 +362,7 @@ description: 把 PRD 的概念/数据模型/视图设计落成可评审的 HTML 
 
 > 为什么 `file://` 也只读:只是本地看看原型时,就该跟原来一样。编辑是**主动**行为,只在你用「原型编辑器」把它跑到 `localhost` 时才开——顺带没了"改完要导出替换"那套,localhost 下直接写盘。
 
-**原型编辑器(独立工具,跨平台,壳是一个控制页)**:自包含成一个 `原型编辑器.app`——`serve.js` / `launcher.js` / `panel.html` 都在它的 `Contents/Resources/` 里,用户目录下**只露一个 App 图标**,不会点错。Mac 双击 `原型编辑器.app`;Windows 双击同目录的 `原型编辑器.vbs`(Win 上 .app 只是普通文件夹,vbs 会钻进去跑);`原型编辑器.command` 作 Mac 兜底(App 因 GUI PATH 找不到 node 时用它)。需装 Node.js。
+**原型编辑器(独立工具,跨平台,壳是一个控制页)**:**仓库里只放源文件**(`assets/editor/`:serve.js / launcher.js / panel.html / AppIcon.icns / Info.plist / app-exec.sh / .vbs / .command)+ `pack.sh`;**不放 `.app`**——否则 macOS 会把磁盘上每个副本(插件缓存、克隆、解压)都索引进 Launchpad,冒出一堆重复图标。`bash assets/editor/pack.sh` 把源文件组装成 `原型编辑器.app` 并打成 `dist/prototype-editor.zip`(作 GitHub Release 附件)。用户**下载 zip 解压**后:Mac 双击 `原型编辑器.app`(自包含,serve/launcher/panel 在 `Contents/Resources/` 内)、Windows 双击 `原型编辑器.vbs`(Win 上 .app 只是文件夹,vbs 钻进去跑)、`原型编辑器.command` 作 Mac 兜底(App 因 GUI PATH 找不到 node 时用)。需装 Node.js。
 
 - **壳 = 控制页**:双击启动器 → 浏览器打开 `http://localhost:47821/`(`panel.html`),上面有操作说明、「选择原型文件夹」按钮、**最近打开 5 条历史**(localStorage,最近在前,点一条快速重开)、「使用说明」链接、「停止」按钮。点选原型 → 服务弹**原生选文件夹**窗 → 选中后在**新标签**进入编辑。
 - **固定端口 47821**:不随机、可收藏。再次双击时如果服务已在跑,直接打开控制页,不重复启动。

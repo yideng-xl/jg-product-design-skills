@@ -14,6 +14,7 @@
 | `prd2prototype` | PRD到原型 | 有了 PRD,需要做 HTML 原型用于产品评审 | [skills/prd2prototype/SKILL.md](skills/prd2prototype/SKILL.md) |
 | `prd2zentao` | PRD到禅道需求 | PRD 定稿后,把第四章产品范围批量同步成禅道研发需求 | [skills/prd2zentao/SKILL.md](skills/prd2zentao/SKILL.md) |
 | `proto-check` | 原型自查 | 原型产出后、评审前,按自查表+UI规范逐条自查,出报告和整改要求 | [skills/proto-check/SKILL.md](skills/proto-check/SKILL.md) |
+| `write-design-review-memo` | 设计评审备忘录 | 设计评审结束后,把录音文字稿整理成可上传的评审备忘录 | [skills/write-design-review-memo/SKILL.md](skills/write-design-review-memo/SKILL.md) |
 
 ## 原型编辑器(下载 · 产品自己改需求标签)
 
@@ -49,6 +50,12 @@ HTML 原型 + PRD 终稿 + 本轮迭代范围 + 设计/技术/QA 确认
     │  · 整改要求粘贴回原型会话整改 → 复查通过后进评审
     ↓
 自查通过的原型(进产品评审)
+    ↓ 触发 skill: write-design-review-memo
+    │  · 完整读取录音文字稿
+    │  · 区分现状、建议、决策、待办和结论
+    │  · 输出会议共识、待办、评审结论和按需复盘
+    ↓
+设计评审备忘录(TXT)
     ↓ 触发 skill: prd2zentao
     │  · 确认目标产品 productID / 模块 moduleID / 来源
     │  · 按 PRD 第四章拆需求 → 字段映射 → API 批量 upsert
@@ -89,6 +96,7 @@ Claude 在看到用户消息里包含 `description` 关键词时,会自动加载
 - **`requirements2prd` 的关键词**:粗需求 / 做 PRD / 产品方案 / 新模块设计 / 需求拆解 / 产品需求文档 / requirements / PRD
 - **`prd2prototype` 的关键词**:做原型 / HTML 原型 / 高保真原型 / 产品评审 / 原型规范 / prototype / mockup
 - **`prd2zentao` 的关键词**:同步禅道 / 建禅道需求 / 把 PRD 提到禅道 / 批量提研发需求 / 需求落禅道 / zentao
+- **`write-design-review-memo` 的关键词**:设计评审备忘录 / 设计评审会议纪要 / 录音文字稿 / 逐字稿 / 产研评审 memo
 
 > 用户:"老板说要做一个 X 模块,你帮我做个 PRD"
 > Claude:[自动加载 skills/requirements2prd/SKILL.md,按七步法开始]
@@ -98,6 +106,7 @@ Claude 在看到用户消息里包含 `description` 关键词时,会自动加载
 ```
 /requirements2prd
 /prd2prototype
+/write-design-review-memo
 ```
 
 ---
@@ -212,19 +221,21 @@ jg-product-design-skills/
     ├── prd2zentao/
     │   ├── SKILL.md         # PRD → 禅道研发需求 方法论
     │   └── 前期操作手册.md   # 装扩展/登录禅道/确认产品 等前置步骤
-    └── proto-check/
+    ├── proto-check/
         ├── SKILL.md         # 原型自查 → 整改要求 方法论
         └── assets/
             ├── 产品设计自查表.md        # 67 条,Z-* 编号,标注原型判定口径
             ├── 七大易用原则量化标准.md   # 75 条,F/T/D/C/R/E/P,标注判定方式
             └── 易用性原则定义.md        # 七大原则定义与价值
+    └── write-design-review-memo/
+        └── SKILL.md                    # 录音文字稿 → 设计评审备忘录
 ```
 
 ---
 
 ## 来源
 
-两个 skill 来自一个真实 B 端项目的完整复盘。原始项目复盘不随 plugin 分发(项目级敏感细节),plugin 内只保留可通用复用的方法论。
+这些 skill 来自真实 B 端项目的复盘。原始项目复盘不随 plugin 分发(项目级敏感细节),plugin 内只保留可通用复用的方法论。
 
 ## 维护者
 

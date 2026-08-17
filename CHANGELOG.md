@@ -4,6 +4,12 @@
 
 ---
 
+## [1.18.1] - 2026-08-17
+
+### 修正(write-design-review-memo · 草稿后缀)
+
+- 草稿后缀改为按实际生成工具选择：Codex 使用 `-Codex`，Claude 使用 `-claude`；定稿时去掉对应后缀。
+
 ## [1.18.0] - 2026-08-17
 
 ### 新增(write-design-review-memo · 设计评审文字稿转备忘录)

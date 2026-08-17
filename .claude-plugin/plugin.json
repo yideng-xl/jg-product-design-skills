@@ -1,6 +1,6 @@
 {
   "name": "jg-product-design-skills",
-  "version": "1.18.0",
+  "version": "1.18.1",
   "description": "产品设计方法论:覆盖粗需求到 PRD、高保真原型、原型自查、设计评审备忘录和禅道研发需求。包含 requirements2prd、prd2prototype、proto-check、write-design-review-memo、prd2zentao 五个 skill。",
   "author": {
     "name": "yideng",

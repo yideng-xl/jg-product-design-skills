@@ -6,30 +6,44 @@
 
 ---
 
-## 包含的 skill
+## 按业务阶段选择 skill
 
-| Skill name | displayName | 触发场景 | 文件 |
+### 1. 跟随需求阶段
+
+#### 1.1 需求管理流程
+
+需求管理主线包含 3 个 skill。完整执行时，`prd2prototype` 与 `prd2zentao` 之间还会经过需求自查和设计评审纪要：
+
+| 阶段 | Skill | 处理内容 | 产出 |
 |---|---|---|---|
-| `requirements2prd` | 粗需求到PRD | 用户给一句话粗需求,需要做成可评审的 PRD | [skills/requirements2prd/SKILL.md](skills/requirements2prd/SKILL.md) |
-| `prd2prototype` | PRD到原型 | 有了 PRD,需要做 HTML 原型用于产品评审 | [skills/prd2prototype/SKILL.md](skills/prd2prototype/SKILL.md) |
-| `prd2zentao` | PRD到禅道需求 | PRD 定稿后,把第四章产品范围批量同步成禅道研发需求 | [skills/prd2zentao/SKILL.md](skills/prd2zentao/SKILL.md) |
-| `proto-check` | 原型自查 | 原型产出后、评审前,按自查表+UI规范逐条自查,出报告和整改要求 | [skills/proto-check/SKILL.md](skills/proto-check/SKILL.md) |
-| `write-design-review-memo` | 设计评审备忘录 | 设计评审结束后,把录音文字稿整理成可上传的评审备忘录 | [skills/write-design-review-memo/SKILL.md](skills/write-design-review-memo/SKILL.md) |
-| `write-product-weekly-minutes` | 产品部周例会主持稿与纪要 | 根据上周纪要和本周周报准备主持稿,再根据会议逐字稿形成正式纪要 | [skills/write-product-weekly-minutes/SKILL.md](skills/write-product-weekly-minutes/SKILL.md) |
+| 需求梳理 | [`requirements2prd`](skills/requirements2prd/SKILL.md) | 把粗需求、现有模块改造或产品化问题梳理成可评审方案 | PRD 草稿、术语、数据模型、状态和待定事项 |
+| 产品设计 | [`prd2prototype`](skills/prd2prototype/SKILL.md) | 根据稳定 PRD 制作 HTML 原型，评审后回写 PRD | 高保真原型、PRD 终稿、本轮迭代范围 |
+| 研发需求入库 | [`prd2zentao`](skills/prd2zentao/SKILL.md) | 把 PRD 产品范围拆成研发需求并同步禅道 | 可估算、可领取的禅道研发需求 |
 
-`write-product-weekly-minutes` 分两次使用：会前提供上周正式会议纪要和本周成员周报，先生成会议主持稿；会后补充录音逐字稿，再整理正式纪要。会议制度和历史人工定稿提炼出的格式标准已经随 Skill 一起分发，不依赖维护者本地文件。
+#### 1.2 需求自查流程
 
-## 原型编辑器(下载 · 产品自己改需求标签)
+[`proto-check`](skills/proto-check/SKILL.md) 是产品评审前的检查环节。它读取 PRD 和原型，按产品设计自查表与易用性标准逐条检查，输出自查报告和整改要求。
 
-`prd2prototype` 产出的原型里,**需求便签 / 原型说明可以由产品自己在网页上改**(不用改代码、不用找 Claude),改完自动写回原型。这个能力靠一个独立小工具「原型编辑器」——它**不随插件自动更新分发,而是下载使用**:
+自查发现问题后，回到 `prd2prototype` 修改原型；复查通过后再进入产品评审。
 
-- **下载**:[prototype-editor.zip](https://github.com/yideng-xl/jg-product-design-skills/releases/latest/download/prototype-editor.zip)(GitHub Release 附件),或从[使用说明页](https://yideng-xl.github.io/jg-product-design-skills/#editor)点下载。
-- **用法**:解压后 Mac 双击 `原型编辑器.app` / Windows 双击 `原型编辑器.vbs`(需装 [Node.js](https://nodejs.org))→ 控制页选原型 → 开「编辑态」改字 → 关页面即停。
-- 只有本地用编辑器打开(localhost)才可编辑;发布到内网、或直接双击 HTML 都是**只读**,评审看不到编辑入口。
+#### 1.3 设计评审纪要
 
----
+[`write-design-review-memo`](skills/write-design-review-memo/SKILL.md) 跟随单个需求或版本的设计评审。评审结束后读取录音逐字稿，提炼会议共识、待办、评审结论和按需复盘。产出的备忘录用于确认设计结论，再进入 PRD 定稿和禅道需求同步。
 
-## 工作流(完整闭环)
+### 2. 日常工作阶段
+
+#### 2.1 产品部周例会主持稿与纪要
+
+[`write-product-weekly-minutes`](skills/write-product-weekly-minutes/SKILL.md) 用于部门日常周例会，与单个需求流程分开运行。
+
+- 会前：提供上周正式会议纪要和本周成员周报，生成会议主持稿。
+- 会后：补充本周会议录音逐字稿，生成正式会议纪要。
+
+会议制度和历史人工定稿提炼出的格式标准已经随 Skill 分发，不依赖维护者本地文件。
+
+## 业务流程
+
+### 1. 跟随需求阶段
 
 ```
 粗需求(一句话)
@@ -48,7 +62,7 @@ PRD 草稿 + 挂起话题 + 术语字典 + 数据模型 + 状态机
     ↓
 HTML 原型 + PRD 终稿 + 本轮迭代范围 + 设计/技术/QA 确认
     ↓ 触发 skill: proto-check
-    │  · 产品设计自查表(67条) + 七大易用原则量化标准(75条)逐条判定
+    │  · 产品设计自查表(86条) + 七大易用原则量化标准原型检查版(51条)逐条判定
     │  · 产出:产品自查报告 + UI规范自查报告(纯表格) + 整改要求
     │  · 整改要求粘贴回原型会话整改 → 复查通过后进评审
     ↓
@@ -68,6 +82,30 @@ HTML 原型 + PRD 终稿 + 本轮迭代范围 + 设计/技术/QA 确认
     ↓ 开发
 代码实现
 ```
+
+### 2. 日常工作阶段：产品部周例会
+
+```text
+上周正式会议纪要 + 本周成员周报
+    ↓ 触发 skill: write-product-weekly-minutes
+会议主持稿
+    ↓ 召开周例会
+本周最新主持稿 + 会议录音逐字稿
+    ↓ 再次触发 skill: write-product-weekly-minutes
+正式会议纪要
+    ↓
+下周例会继承“本周闭环”事项
+```
+
+---
+
+## 配套工具：原型编辑器
+
+`prd2prototype` 产出的原型里,**需求便签 / 原型说明可以由产品自己在网页上改**(不用改代码、不用找 Claude),改完自动写回原型。这个能力靠一个独立小工具「原型编辑器」——它**不随插件自动更新分发,而是下载使用**:
+
+- **下载**:[prototype-editor.zip](https://github.com/yideng-xl/jg-product-design-skills/releases/latest/download/prototype-editor.zip)(GitHub Release 附件),或从[使用说明页](https://yideng-xl.github.io/jg-product-design-skills/#editor)点下载。
+- **用法**:解压后 Mac 双击 `原型编辑器.app` / Windows 双击 `原型编辑器.vbs`(需装 [Node.js](https://nodejs.org))→ 控制页选原型 → 开「编辑态」改字 → 关页面即停。
+- 只有本地用编辑器打开(localhost)才可编辑;发布到内网、或直接双击 HTML 都是**只读**,评审看不到编辑入口。
 
 ---
 
@@ -94,13 +132,16 @@ Claude Code 启动时会自动扫描 `~/.claude/plugins/` 下的 plugin,识别 `
 
 ### 自动触发(推荐)
 
-Claude 在看到用户消息里包含 `description` 关键词时,会自动加载对应 skill:
+Claude 在看到用户消息里包含 `description` 关键词时,会自动加载对应 skill。
 
-- **`requirements2prd` 的关键词**:粗需求 / 做 PRD / 产品方案 / 新模块设计 / 需求拆解 / 产品需求文档 / requirements / PRD
-- **`prd2prototype` 的关键词**:做原型 / HTML 原型 / 高保真原型 / 产品评审 / 原型规范 / prototype / mockup
-- **`prd2zentao` 的关键词**:同步禅道 / 建禅道需求 / 把 PRD 提到禅道 / 批量提研发需求 / 需求落禅道 / zentao
-- **`write-design-review-memo` 的关键词**:设计评审备忘录 / 设计评审会议纪要 / 录音文字稿 / 逐字稿 / 产研评审 memo
-- **`write-product-weekly-minutes` 的关键词**:产品部周例会 / 周例会主持稿 / 周例会纪要 / 上周会议纪要 / 本周成员周报
+| 业务阶段 | 子流程 | Skill | 常见触发词 |
+|---|---|---|---|
+| 跟随需求阶段 | 需求管理 | `requirements2prd` | 粗需求 / 做 PRD / 产品方案 / 新模块设计 / 需求拆解 |
+| 跟随需求阶段 | 需求管理 | `prd2prototype` | 做原型 / HTML 原型 / 高保真原型 / 产品评审 / 原型规范 |
+| 跟随需求阶段 | 需求自查 | `proto-check` | 原型自查 / 原型走查 / 规范检查 / 易用性检查 / 整改清单 |
+| 跟随需求阶段 | 设计评审纪要 | `write-design-review-memo` | 设计评审备忘录 / 设计评审会议纪要 / 逐字稿 / 产研评审 memo |
+| 跟随需求阶段 | 需求管理 | `prd2zentao` | 同步禅道 / 建禅道需求 / 批量提研发需求 / 需求落禅道 |
+| 日常工作阶段 | 产品部周例会 | `write-product-weekly-minutes` | 产品部周例会 / 周例会主持稿 / 周例会纪要 / 本周成员周报 |
 
 > 用户:"老板说要做一个 X 模块,你帮我做个 PRD"
 > Claude:[自动加载 skills/requirements2prd/SKILL.md,按七步法开始]
@@ -110,7 +151,9 @@ Claude 在看到用户消息里包含 `description` 关键词时,会自动加载
 ```
 /requirements2prd
 /prd2prototype
+/proto-check
 /write-design-review-memo
+/prd2zentao
 /write-product-weekly-minutes
 ```
 
@@ -229,8 +272,8 @@ jg-product-design-skills/
     ├── proto-check/
         ├── SKILL.md         # 原型自查 → 整改要求 方法论
         └── assets/
-            ├── 产品设计自查表.md        # 67 条,Z-* 编号,标注原型判定口径
-            ├── 七大易用原则量化标准.md   # 75 条,F/T/D/C/R/E/P,标注判定方式
+            ├── 产品设计自查表.md        # 86 条,Z-* 编号,标注原型判定口径
+            ├── 七大易用原则量化标准.md   # 原型检查版 51 条,F/T/D/C/R/E/P
             └── 易用性原则定义.md        # 七大原则定义与价值
     ├── write-design-review-memo/
     │   └── SKILL.md                    # 录音文字稿 → 设计评审备忘录

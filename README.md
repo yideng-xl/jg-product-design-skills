@@ -1,6 +1,6 @@
 # jg-product-design-skills
 
-> 产品设计方法论 Claude plugin。从粗需求到 PRD、从 PRD 到高保真原型的完整工作流。
+> 产品设计与产品会议方法论 Claude plugin。覆盖产品需求、原型、评审、周例会和禅道需求。
 >
 > **维护者维护、git 发布、团队自动更新**。
 
@@ -15,6 +15,9 @@
 | `prd2zentao` | PRD到禅道需求 | PRD 定稿后,把第四章产品范围批量同步成禅道研发需求 | [skills/prd2zentao/SKILL.md](skills/prd2zentao/SKILL.md) |
 | `proto-check` | 原型自查 | 原型产出后、评审前,按自查表+UI规范逐条自查,出报告和整改要求 | [skills/proto-check/SKILL.md](skills/proto-check/SKILL.md) |
 | `write-design-review-memo` | 设计评审备忘录 | 设计评审结束后,把录音文字稿整理成可上传的评审备忘录 | [skills/write-design-review-memo/SKILL.md](skills/write-design-review-memo/SKILL.md) |
+| `write-product-weekly-minutes` | 产品部周例会主持稿与纪要 | 根据上周纪要和本周周报准备主持稿,再根据会议逐字稿形成正式纪要 | [skills/write-product-weekly-minutes/SKILL.md](skills/write-product-weekly-minutes/SKILL.md) |
+
+`write-product-weekly-minutes` 分两次使用：会前提供上周正式会议纪要和本周成员周报，先生成会议主持稿；会后补充录音逐字稿，再整理正式纪要。会议制度和历史人工定稿提炼出的格式标准已经随 Skill 一起分发，不依赖维护者本地文件。
 
 ## 原型编辑器(下载 · 产品自己改需求标签)
 
@@ -97,6 +100,7 @@ Claude 在看到用户消息里包含 `description` 关键词时,会自动加载
 - **`prd2prototype` 的关键词**:做原型 / HTML 原型 / 高保真原型 / 产品评审 / 原型规范 / prototype / mockup
 - **`prd2zentao` 的关键词**:同步禅道 / 建禅道需求 / 把 PRD 提到禅道 / 批量提研发需求 / 需求落禅道 / zentao
 - **`write-design-review-memo` 的关键词**:设计评审备忘录 / 设计评审会议纪要 / 录音文字稿 / 逐字稿 / 产研评审 memo
+- **`write-product-weekly-minutes` 的关键词**:产品部周例会 / 周例会主持稿 / 周例会纪要 / 上周会议纪要 / 本周成员周报
 
 > 用户:"老板说要做一个 X 模块,你帮我做个 PRD"
 > Claude:[自动加载 skills/requirements2prd/SKILL.md,按七步法开始]
@@ -107,6 +111,7 @@ Claude 在看到用户消息里包含 `description` 关键词时,会自动加载
 /requirements2prd
 /prd2prototype
 /write-design-review-memo
+/write-product-weekly-minutes
 ```
 
 ---
@@ -227,8 +232,14 @@ jg-product-design-skills/
             ├── 产品设计自查表.md        # 67 条,Z-* 编号,标注原型判定口径
             ├── 七大易用原则量化标准.md   # 75 条,F/T/D/C/R/E/P,标注判定方式
             └── 易用性原则定义.md        # 七大原则定义与价值
-    └── write-design-review-memo/
-        └── SKILL.md                    # 录音文字稿 → 设计评审备忘录
+    ├── write-design-review-memo/
+    │   └── SKILL.md                    # 录音文字稿 → 设计评审备忘录
+    └── write-product-weekly-minutes/
+        ├── SKILL.md                    # 周报与逐字稿 → 主持稿与正式纪要
+        ├── agents/openai.yaml          # Codex 展示与触发信息
+        └── references/
+            ├── meeting-standard.md     # 会议制度与历史定稿提炼标准
+            └── template.md             # 6 章正文模板
 ```
 
 ---

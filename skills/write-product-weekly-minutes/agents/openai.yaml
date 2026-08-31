@@ -1,0 +1,7 @@
+interface:
+  display_name: "产品部周例会主持稿与纪要"
+  short_description: "根据上周纪要和本周周报准备主持稿，再根据会议逐字稿形成正式纪要"
+  default_prompt: "使用 $write-product-weekly-minutes，根据上周正式会议纪要和本周成员周报生成本周会议主持稿。"
+
+policy:
+  allow_implicit_invocation: true
